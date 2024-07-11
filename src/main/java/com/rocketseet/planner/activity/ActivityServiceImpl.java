@@ -1,5 +1,6 @@
 package com.rocketseet.planner.activity;
 
+import com.rocketseet.planner.handler.BusinessException;
 import com.rocketseet.planner.trip.Trip;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,12 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public List<ActivityData> getAllActivitiesFromTrip(UUID tripId) {
+        List<Activity> activityList = this.activityRepository.findByTripId(tripId);
+
+        if (activityList.isEmpty()) {
+            throw new BusinessException("No activities found for trip ID: " + tripId);
+        }
+
         return this.activityRepository.findByTripId(tripId).stream()
                 .map(activity -> new ActivityData(activity.getId(), activity.getTitle(), activity.getOccursAt()))
                 .toList();

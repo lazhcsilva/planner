@@ -1,7 +1,6 @@
 package com.rocketseet.planner.link;
 
-import com.rocketseet.planner.activity.ActivityData;
-import com.rocketseet.planner.activity.ActivityResponse;
+import com.rocketseet.planner.handler.BusinessException;
 import com.rocketseet.planner.trip.Trip;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +27,12 @@ public class LinkServiceImpl implements LinkService {
 
     @Override
     public List<LinkData> getAllLinksFromTrip(UUID tripId) {
+        List<Link> linkList = this.linkRepository.findByTripId(tripId);
+
+        if (linkList.isEmpty()) {
+            throw new BusinessException("No links found for trip ID: " + tripId);
+        }
+
         return this.linkRepository.findByTripId(tripId).stream()
                 .map(link -> new LinkData(link.getTitle(), link.getUrl()))
                 .toList();

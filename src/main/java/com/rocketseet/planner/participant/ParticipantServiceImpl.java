@@ -1,5 +1,6 @@
 package com.rocketseet.planner.participant;
 
+import com.rocketseet.planner.handler.BusinessException;
 import com.rocketseet.planner.trip.Trip;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,12 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public List<ParticipantData> getAllParticipantsFromTrip(UUID tripId) {
+        List<Participant> participantList = this.participantRepository.findByTripId(tripId);
+
+        if (participantList.isEmpty()) {
+            throw new BusinessException("No participants found for trip ID: " + tripId);
+        }
+
         return this.participantRepository.findByTripId(tripId).stream()
                 .map(participant -> new ParticipantData(participant.getId(),
                         participant.getName(), participant.getEmail(), participant.getConfirmed()))
